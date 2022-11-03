@@ -1,0 +1,3 @@
+numpy
+thulac
+matplotlib==3.4
