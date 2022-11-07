@@ -20,13 +20,15 @@ words_path = {
 # 训练集与验证集的词语索引 dict
 vocab_path = {
     "train": "/".join([dir_path, "train_vocab.pkl"]),
-    "val": "/".join([dir_path, "val_vocab.pkl"])
+    "val": "/".join([dir_path, "val_vocab.pkl"]),
+    "_train": "/".join([dir_path, "train_vocab.pkl"]),
 }
 
 # 训练集与验证集的用索引表示的新闻原文
 corpus_path = {
     "train": "/".join([dir_path, "train_corpus.npy"]),
-    "val": "/".join([dir_path, "val_corpus.npy"])
+    "val": "/".join([dir_path, "val_corpus.npy"]),
+    "_train": "/".join([dir_path, "train_corpus.npy"]),
 }
 
 
@@ -153,9 +155,9 @@ def load_data(data_type="train", is_multi_file=False, file_idx=None):
     """
 
     if is_multi_file:
-        words_path["train"] = str(file_idx).join(os.path.splitext(words_path["train"]))
-        vocab_path["train"] = str(file_idx).join(os.path.splitext(vocab_path["train"]))
-        corpus_path["train"] = str(file_idx).join(os.path.splitext(corpus_path["train"]))
+        words_path["train"] = str(file_idx).join(os.path.splitext(words_path["_train"]))
+        vocab_path["train"] = str(file_idx).join(os.path.splitext(vocab_path["_train"]))
+        corpus_path["train"] = str(file_idx).join(os.path.splitext(corpus_path["_train"]))
         word_to_id, id_to_word = load_vocab(data_type, is_multi_file=True, file_idx=file_idx)
     else:
         word_to_id, id_to_word = load_vocab(data_type)
@@ -201,7 +203,7 @@ def divide_dataset(filename, size=100):
     print("Dataset Division Done!")
 
 
-def divide_multi_dataset(filename, size=15000):
+def divide_multi_dataset(filename, size=25000):
     lines_len = 160332
     cnt = 0
     file_num = lines_len // size

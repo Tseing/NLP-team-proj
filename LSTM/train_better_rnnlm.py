@@ -15,53 +15,52 @@ import preprocess
 
 
 # 设定超参数
-batch_size = 8
-wordvec_size = 512
-hidden_size = 512
-time_size = 35
+batch_size = 16
+wordvec_size = 256
+hidden_size = 256
+time_size = 20
 lr = 20.0
-max_epoch = 40
+max_epoch = 5
 max_grad = 0.25
 dropout = 0.5
 
 model_num = 10
 
-corpus, word_to_id, id_to_word = preprocess.load_data("train", is_multi_file=True, file_idx=0)
-for model_idx in range(model_num):
+
+# for model_idx in range(model_num):
     # 读入训练数据
-    # corpus, word_to_id, id_to_word = preprocess.load_data("train", is_multi_file=True, file_idx=model_idx)
-    # corpus_val, _, _ = preprocess.load_data('val')
+corpus, word_to_id, id_to_word = preprocess.load_data("train")
+corpus_val, _, _ = preprocess.load_data('val')
 
-    if config.GPU:
-        corpus = to_gpu(corpus)
-        corpus_val = to_gpu(corpus_val)
+if config.GPU:
+    corpus = to_gpu(corpus)
+    corpus_val = to_gpu(corpus_val)
 
-    vocab_size = len(word_to_id)
-    xs = corpus[:-1]
-    ts = corpus[1:]
+vocab_size = len(word_to_id)
+xs = corpus[:-1]
+ts = corpus[1:]
 
-    model = BetterRnnlm(vocab_size, wordvec_size, hidden_size, dropout)
-    optimizer = SGD(lr)
-    trainer = RnnlmTrainer(model, optimizer)
+model = BetterRnnlm(vocab_size, wordvec_size, hidden_size, dropout)
+optimizer = SGD(lr)
+trainer = RnnlmTrainer(model, optimizer)
 
-    best_ppl = float('inf')
-    for epoch in range(max_epoch):
-        trainer.fit(xs, ts, max_epoch=1, batch_size=batch_size,
-                    time_size=time_size, max_grad=max_grad,
-                    is_multi_model= True, model_idx=model_idx)
+best_ppl = float('inf')
+for epoch in range(max_epoch):
+    trainer.fit(xs, ts, max_epoch=1, batch_size=batch_size,
+                time_size=time_size, max_grad=max_grad)
 
-        model.reset_state()
-        ppl = eval_perplexity(model, corpus_val)
-        print("Model:", model_idx, 'valid perplexity: ', ppl)
+    model.reset_state()
+    ppl = eval_perplexity(model, corpus_val)
+    print("Model:", 'valid perplexity: ', ppl)
 
-        if best_ppl > ppl:
-            best_ppl = ppl
-            model.save_params(file_name=model.__class__.__name__ + str(model_idx) + '.pkl')
-        else:
-            lr /= 4.0
-            optimizer.lr = lr
+    if best_ppl > ppl:
+        best_ppl = ppl
+        model.save_params()
+    else:
+        lr /= 4.0
+        optimizer.lr = lr
 
-        model.reset_state()
-        print('-' * 50)
+    model.reset_state()
+    print('-' * 50)
 
 print("Training Done!")

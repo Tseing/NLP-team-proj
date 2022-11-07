@@ -2,3 +2,5 @@
 dataset/
 /__pycache__
 /.idea
+upload_data.csv
+*.pkl
