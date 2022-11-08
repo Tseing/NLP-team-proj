@@ -79,9 +79,10 @@ def get_articles(filename):
     print("Articles File Done!")
 
 
-def articles2words(output_path):
+def articles2words(articles_path, output_path):
     """
     分词引擎，将新闻划分为词语，以空格分隔
+    :param articles_path:
     :param output_path:
     :return:
     """
@@ -116,6 +117,8 @@ def load_words(data_type="train", is_multi_file=False, file_idx=None):
 def load_vocab(data_type="train", is_multi_file=False, file_idx=None):
     """
     判断相应数据文件是否存在，生成相应格式的数据文件，得到词语与索引的 dict
+    :param file_idx:
+    :param is_multi_file:
     :param data_type:
     :return:
     """
@@ -137,7 +140,7 @@ def load_vocab(data_type="train", is_multi_file=False, file_idx=None):
 
     else:
         get_articles(csv_path)
-        articles2words(output_path=total_words_path)
+        articles2words(articles_path, output_path=total_words_path)
         if is_multi_file:
             divide_multi_dataset(total_words_path)
         else:

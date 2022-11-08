@@ -4,3 +4,4 @@ dataset/
 /.idea
 upload_data.csv
 *.pkl
+*.csv
